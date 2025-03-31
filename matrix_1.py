@@ -8,8 +8,7 @@ def read_amounts() -> tuple[int, int]:
         raise ValueError
     elif not (raw_string[0].isdigit() and raw_string[1].isdigit()):
         raise TypeError
-    else:
-        return tuple(map(int, raw_string))
+    return tuple(map(int, raw_string))
 
 
 def read_data(amount_of_strings: int, amount_of_rows: int) -> list[list[int]]:
@@ -22,8 +21,7 @@ def read_data(amount_of_strings: int, amount_of_rows: int) -> list[list[int]]:
             raise ValueError
         elif not all(substring.isdigit() for substring in raw_string):
             raise TypeError
-        else:
-            matrix[string_index] = list(map(int, raw_string))
+        matrix[string_index] = list(map(int, raw_string))
 
     return matrix
 
@@ -31,15 +29,13 @@ def read_data(amount_of_strings: int, amount_of_rows: int) -> list[list[int]]:
 def find_max(matrix: list[list[int]]) -> int:
     if not sum(len(string) for string in matrix):
         raise ValueError
-    else:
-        return max(max(string) for string in matrix)
+    return max(max(string) for string in matrix)
 
 
 def get_row(matrix: list[list[int]], row_index: int) -> list[int]:
     if row_index >= len(matrix[0]):
         raise ValueError
-    else:
-        return [matrix[i][row_index] for i in range(len(matrix))]
+    return [matrix[i][row_index] for i in range(len(matrix))]
 
 
 def rotate_matrix(matrix: list[list[int]]) -> list[list[int]]:
@@ -96,9 +92,7 @@ class TestInputData(TestCase):
             read_data(self.__amount_of_strings, self.__amount_of_rows)
 
     @patch("builtins.input", return_value="1 1 1 1 1")
-    def test_amount_of_string_less_or_greater_input_strings(
-        self, mock_input: MagicMock
-    ) -> None:
+    def test_correct(self, mock_input: MagicMock) -> None:
         self.assertEqual(
             read_data(self.__amount_of_strings, self.__amount_of_rows), [[1] * 5] * 3
         )
