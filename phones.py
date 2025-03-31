@@ -71,11 +71,11 @@ class TestPhoneNumber(TestCase):
 
     def test_equals(self) -> None:
         another_test_phone_number: PhoneNumber = PhoneNumber("917", "1234567")
-        self.assertTrue(self.__test_number, another_test_phone_number)
+        self.assertTrue(self.__test_phone_number == another_test_phone_number)
 
     def test_not_equal(self) -> None:
         another_test_phone_number: PhoneNumber = PhoneNumber("123", "1231231")
-        self.assertFalse(self.__test_phone_number, another_test_phone_number)
+        self.assertFalse(self.__test_phone_number == another_test_phone_number)
 
 
 if __name__ == "__main__":

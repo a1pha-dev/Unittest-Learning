@@ -1,4 +1,9 @@
 from unittest import TestCase
+from sys import stdin
+
+
+def get_input_value() -> str:
+    return "".join(line for line in stdin)
 
 
 class SymbolStat:
@@ -18,21 +23,16 @@ class SymbolStatsBuilder:
         self.__data: list[SymbolStat]
 
     def __remove_spaces(self) -> None:
-        self.__string = self.__string.replace(" ", "")
+        self.__string = self.__string.replace(" ", "").replace("\n", "")
 
     def __define_letters(self) -> None:
         self.__letters = list(set(self.__string))
 
     def __define_amounts(self) -> None:
-        self.__amounts = list(
-            map(lambda letter: self.__string.count(letter), self.__letters)
-        )
+        self.__amounts = list(map(lambda letter: self.__string.count(letter), self.__letters))
 
     def __define_stats(self) -> None:
-        self.__data = [
-            SymbolStat(self.__letters[i], self.__amounts[i])
-            for i in range(len(self.__letters))
-        ]
+        self.__data = [SymbolStat(self.__letters[i], self.__amounts[i]) for i in range(len(self.__letters))]
 
     def __sort_stats(self) -> None:
         self.__data.sort(key=lambda item: item.get_stat()[0])
@@ -71,9 +71,7 @@ class HistogramBuilder:
         self.__table: list[list[str]] = self.__rotate_table(raw_table, max_width)
         self.__table.reverse()
 
-    def __rotate_table(
-        self, raw_table: list[list[str]], max_width: int
-    ) -> list[list[str]]:
+    def __rotate_table(self, raw_table: list[list[str]], max_width: int) -> list[list[str]]:
         table: list[list[str]] = [[None] * len(raw_table)] * (max_width + 1)
         for i in range(len(table)):
             record: list[str] = []
@@ -84,14 +82,12 @@ class HistogramBuilder:
         return table
 
     def __str__(self):
-        return "".join("".join(row) + "\n" for row in self.__table)
+        return "\n".join("".join(row) for row in self.__table)
 
 
 def main() -> None:
 
-    string: str = input()
-    while string[-1] == "\n":
-        string += input()
+    string: str = get_input_value()
 
     stats: SymbolStatsBuilder = SymbolStatsBuilder(string)
     stats.define_values()
@@ -122,15 +118,11 @@ class TestSymbolStatBuilder(TestCase):
 
 class TestHistogramBuilder(TestCase):
     def setUp(self):
-        self.__builder: HistogramBuilder = HistogramBuilder(
-            {"t": 3, "e": 1, "s": 2, "r": 1, "i": 1, "n": 1, "g": 1}
-        )
+
+        self.__builder: HistogramBuilder = HistogramBuilder({"e": 1, "g": 1, "i": 1, "n": 1, "r": 1, "s": 2, "t": 3})
 
     def test_histogram(self):
-        self.assertEqual(
-            str(self.__builder),
-            "#\n     ##\n\n#######\neginrst",
-        )
+        self.assertEqual(str(self.__builder), "      #\n     ##\n#######\neginrst")
 
 
 if __name__ == "__main__":
