@@ -1,9 +1,10 @@
 from unittest import TestCase
+from unittest.mock import MagicMock, patch
 from sys import stdin
 
 
 def get_input_value() -> str:
-    return "".join(line for line in stdin)
+    return stdin.read()
 
 
 class SymbolStat:
@@ -118,11 +119,17 @@ class TestSymbolStatBuilder(TestCase):
 
 class TestHistogramBuilder(TestCase):
     def setUp(self):
-
         self.__builder: HistogramBuilder = HistogramBuilder({"e": 1, "g": 1, "i": 1, "n": 1, "r": 1, "s": 2, "t": 3})
 
     def test_histogram(self):
         self.assertEqual(str(self.__builder), "      #\n     ##\n#######\neginrst")
+
+
+class TestInput(TestCase):
+    @patch("sys.stdin.read", return_value="test test test test\n     test\n\n")
+    def test_get_input(self, input_mock: MagicMock) -> None:
+        self.assertEqual(get_input_value(), "test test test test\n     test\n\n")
+        input_mock.assert_called_once_with()
 
 
 if __name__ == "__main__":

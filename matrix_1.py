@@ -6,7 +6,7 @@ def read_amounts() -> tuple[int, int]:
     raw_string: list[str] = input().split()
     if len(raw_string) != 2:
         raise ValueError
-    elif not (raw_string[0].isdigit() and raw_string[1].isdigit()):
+    if not (raw_string[0].isdigit() and raw_string[1].isdigit()):
         raise TypeError
     return tuple(map(int, raw_string))
 
@@ -26,34 +26,38 @@ def read_data(amount_of_strings: int, amount_of_rows: int) -> list[list[int]]:
     return matrix
 
 
-def find_max(matrix: list[list[int]]) -> int:
-    if not sum(len(string) for string in matrix):
-        raise ValueError
-    return max(max(string) for string in matrix)
+class Matrix:
+    def __init__(self, data: list[list[int]]) -> None:
+        self.__data: list[list[int]] = data
 
+    def __str__(self):
+        return "".join("".join(map(str, row)) for row in self.__data)
 
-def get_row(matrix: list[list[int]], row_index: int) -> list[int]:
-    if row_index >= len(matrix[0]):
-        raise ValueError
-    return [matrix[i][row_index] for i in range(len(matrix))]
+    def get_data(self) -> list[list[int]]:
+        return self.__data
 
+    def find_max(self) -> int:
+        if not sum(len(string) for string in self.__data):
+            raise ValueError
+        return max(max(string) for string in self.__data)
 
-def rotate_matrix(matrix: list[list[int]]) -> list[list[int]]:
-    return [get_row(matrix, j) for j in range(len(matrix[0]))]
+    def get_row(self, row_index: int) -> list[int]:
+        if row_index >= len(self.__data[0]):
+            raise ValueError
+        return [self.__data[i][row_index] for i in range(len(self.__data))]
 
+    def rotate_matrix(self) -> None:
+        self.__data = [self.get_row(j) for j in range(len(self.__data[0]))]
 
-def find_row_with_max(matrix: list[list[int]]) -> list[list[int]]:
-    return list(filter(lambda row: find_max(matrix) in row, rotate_matrix(matrix)))
+    def find_row_with_max(self) -> None:
+        self.rotate_matrix()
+        self.__data = list(filter(lambda row: self.find_max() in row, self.__data))
 
 
 def main() -> None:
-    amount_of_strings: int
-    amount_of_rows: int
-    amount_of_strings, amount_of_rows = read_amounts()
-    matrix: list[list[int]] = read_data(amount_of_strings, amount_of_rows)
-
-    for row in find_row_with_max(matrix):
-        print(*row)
+    matrix: Matrix = Matrix(read_data(*read_amounts()))
+    matrix.find_row_with_max()
+    print(matrix)
 
 
 if __name__ == "__main__":
@@ -85,43 +89,43 @@ class TestInputData(TestCase):
         self.__amount_of_rows: int = 5
 
     @patch("builtins.input", return_value="1 2 3 4 5 6")
-    def test_amount_of_rows_less_than_or_greater_input_rows(
-        self, mock_input: MagicMock
-    ) -> None:
+    def test_amount_of_rows_less_than_or_greater_input_rows(self, mock_input: MagicMock) -> None:
         with self.assertRaises(ValueError):
             read_data(self.__amount_of_strings, self.__amount_of_rows)
 
     @patch("builtins.input", return_value="1 1 1 1 1")
     def test_correct(self, mock_input: MagicMock) -> None:
-        self.assertEqual(
-            read_data(self.__amount_of_strings, self.__amount_of_rows), [[1] * 5] * 3
-        )
+        self.assertEqual(read_data(self.__amount_of_strings, self.__amount_of_rows), [[1] * 5] * 3)
         mock_input.assert_called()
 
 
 class TestMatrix(TestCase):
     def setUp(self) -> None:
-        self.__matrix: list[list[int]] = [
-            [123, 121, 120, 119],
-            [457, 121, 222, 119],
-            [123, 321, 120, 542],
-        ]
+        self.__matrix: Matrix = Matrix(
+            [
+                [123, 121, 120, 119],
+                [457, 121, 222, 119],
+                [123, 321, 120, 542],
+            ]
+        )
 
     def test_find_max(self) -> None:
-        self.assertEqual(find_max(self.__matrix), 542)
+        self.assertEqual(self.__matrix.find_max(), 542)
 
     def test_rotate_matrix(self) -> None:
+        self.__matrix.rotate_matrix()
         self.assertEqual(
-            rotate_matrix(self.__matrix),
+            self.__matrix.get_data(),
             [[123, 457, 123], [121, 121, 321], [120, 222, 120], [119, 119, 542]],
         )
 
     def test_get_row(self) -> None:
-        self.assertEqual(get_row(self.__matrix, 1), [121, 121, 321])
+        self.assertEqual(self.__matrix.get_row(1), [121, 121, 321])
 
     def test_find_row_with_max(self) -> None:
+        self.__matrix.find_row_with_max()
         self.assertEqual(
-            find_row_with_max(self.__matrix),
+            self.__matrix.get_data(),
             [
                 [119, 119, 542],
             ],
