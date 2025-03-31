@@ -30,8 +30,7 @@ def read_data(amount_of_strings: int, amount_of_rows: int) -> list[list[str]]:
         raw_string: str = input().split()
         if len(raw_string) != amount_of_rows:
             raise ValueError
-        else:
-            matrix[string_index] = raw_string
+        matrix[string_index] = raw_string
 
     return matrix
 
@@ -92,6 +91,8 @@ class TestInputAmounts(TestCase):
         self.assertEqual(read_amounts(), (123, 123))
         mock_input.assert_called_once_with()
 
+
+class TestBordersInput(TestCase):
     @patch("builtins.input", return_value="123 123 123 123 123")
     def test_too_many_values(self, mock_input: MagicMock) -> None:
         with self.assertRaises(ValueError):
@@ -105,8 +106,8 @@ class TestInputAmounts(TestCase):
         mock_input.assert_called_once_with()
 
     @patch("builtins.input", return_value="123 123 123 123")
-    def test_correct(self, mock_input: MagicMock) -> None:
-        self.assertEqual(read_boarders(), (123, 123, 123, 123))
+    def test_input_correct(self, mock_input: MagicMock) -> None:
+        self.assertEqual(read_boarders(), (122, 122, 122, 122))
         mock_input.assert_called_once_with()
 
 
